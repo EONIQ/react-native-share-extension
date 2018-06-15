@@ -58,8 +58,16 @@ public class ShareModule extends ReactContextBaseJavaModule {
         }
         else if (Intent.ACTION_SEND.equals(action) && ("image/*".equals(type) || "image/jpeg".equals(type) || "image/png".equals(type) || "image/jpg".equals(type) ) ) {
           Uri uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-         value = "file://" + RealPathUtil.getRealPathFromURI(currentActivity, uri);
-
+          if (uri.toString().startsWith("content://")) {
+            try {
+                value = "file://" + convertToBitmapAndCreateAFile((Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM));
+            } catch (IOException e) {
+                value = "";
+                e.printStackTrace();
+            }
+          } else {
+              value = "file://" + RealPathUtil.getRealPathFromURI(currentActivity, uri);
+          }
        } else {
          value = "";
        }
@@ -72,5 +80,29 @@ public class ShareModule extends ReactContextBaseJavaModule {
       map.putString("value",value);
 
       return map;
+  }
+
+  /**
+   * Edited by : AASHIK HAMEED :  Convert the Uri content to bitmap and reduce the quality of the image then save it inside a cache file.
+   * @param Uri
+   * @return
+   * @throws IOException
+   */
+  private String convertToBitmapAndCreateAFile(Uri Uri) throws IOException {
+    Bitmap bitmap = MediaStore.Images.Media.getBitmap(reactApplicationContext.getContentResolver(), Uri);
+
+    //create a file to write bitmap data
+    File f = new File(reactApplicationContext.getCacheDir(), "shareImage_ "+ System.currentTimeMillis() +".jpeg");
+    f.createNewFile();
+    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    bitmap.compress(Bitmap.CompressFormat.JPEG, 40, bos);
+    byte[] bitmapdata = bos.toByteArray();
+
+    FileOutputStream fos = new FileOutputStream(f);
+    fos.write(bitmapdata);
+    fos.flush();
+    fos.close();
+
+    return f.getAbsolutePath();
   }
 }
