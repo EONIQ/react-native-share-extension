@@ -12,8 +12,7 @@ import android.content.Intent;
 import android.net.Uri;
 
 import android.graphics.Bitmap;
-import java.io.InputStream;
-import java.io.IOException;
+import java.io.*;
 
 public class ShareModule extends ReactContextBaseJavaModule {
 
@@ -89,10 +88,10 @@ public class ShareModule extends ReactContextBaseJavaModule {
    * @throws IOException
    */
   private String convertToBitmapAndCreateAFile(Uri Uri) throws IOException {
-    Bitmap bitmap = MediaStore.Images.Media.getBitmap(reactApplicationContext.getContentResolver(), Uri);
+    Bitmap bitmap = MediaStore.Images.Media.getBitmap(ReactApplicationContext.getContentResolver(), Uri);
 
     //create a file to write bitmap data
-    File f = new File(reactApplicationContext.getCacheDir(), "shareImage_ "+ System.currentTimeMillis() +".jpeg");
+    File f = new File(ReactApplicationContext.getCacheDir(), "shareImage_ "+ System.currentTimeMillis() +".jpeg");
     f.createNewFile();
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     bitmap.compress(Bitmap.CompressFormat.JPEG, 40, bos);
