@@ -10,15 +10,17 @@ import com.facebook.react.bridge.Arguments;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.provider.MediaStore;
 
 import android.graphics.Bitmap;
 import java.io.*;
 
 public class ShareModule extends ReactContextBaseJavaModule {
-
+  ReactApplicationContext reactApplicationContext;
 
   public ShareModule(ReactApplicationContext reactContext) {
       super(reactContext);
+      reactApplicationContext = reactContext;
   }
 
   @Override
@@ -88,10 +90,10 @@ public class ShareModule extends ReactContextBaseJavaModule {
    * @throws IOException
    */
   private String convertToBitmapAndCreateAFile(Uri Uri) throws IOException {
-    Bitmap bitmap = MediaStore.Images.Media.getBitmap(ReactApplicationContext.getContentResolver(), Uri);
+    Bitmap bitmap = MediaStore.Images.Media.getBitmap(reactApplicationContext.getContentResolver(), Uri);
 
     //create a file to write bitmap data
-    File f = new File(ReactApplicationContext.getCacheDir(), "shareImage_ "+ System.currentTimeMillis() +".jpeg");
+    File f = new File(reactApplicationContext.getCacheDir(), "shareImage_ "+ System.currentTimeMillis() +".jpeg");
     f.createNewFile();
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     bitmap.compress(Bitmap.CompressFormat.JPEG, 40, bos);
