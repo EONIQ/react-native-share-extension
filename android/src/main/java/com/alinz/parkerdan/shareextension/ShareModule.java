@@ -13,7 +13,7 @@ import android.net.Uri;
 
 import android.graphics.Bitmap;
 import java.io.InputStream;
-
+import java.io.IOException;
 
 public class ShareModule extends ReactContextBaseJavaModule {
 
